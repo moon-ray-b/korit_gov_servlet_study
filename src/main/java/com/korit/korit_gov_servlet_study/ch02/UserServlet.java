@@ -35,17 +35,18 @@ public class UserServlet extends HttpServlet {
 
         Map<String, String> error = validUser(user);
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        //에러 응답
         if (!error.isEmpty()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().println(error);
             return;
         }
+
         users.add(user);
         System.out.println(users);
-        //응답
-        resp.setStatus(HttpServletResponse.SC_OK);//200
+        //정상 처리 응답
+        resp.setStatus(HttpServletResponse.SC_OK); //200
         resp.getWriter().println("사용자 등록 완료");
-
     }
 
     @Override
@@ -56,6 +57,7 @@ public class UserServlet extends HttpServlet {
         List<User> foundUsers = users.stream()
                 .filter(user -> user.getUsername().equals(req.getParameter("username")))
                 .toList();
+
         User foundUser = foundUsers.isEmpty() ? null : foundUsers.get(0);
 
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -66,18 +68,22 @@ public class UserServlet extends HttpServlet {
             return;
         }
         resp.getWriter().println(foundUser);
+        resp.getWriter().println(foundUser);
+        resp.getWriter().println(foundUser);
+
     }
 
     private Map<String, String> validUser(Object dto) {
         Map<String, String> error = new HashMap<>();
 
-        Arrays.stream(dto.getClass().getDeclaredFields()).forEach(f ->{
+        //user 객체의 선언된 모든 필드(접근제어자 무관)를 스트림으로 순회
+        Arrays.stream(dto.getClass().getDeclaredFields()).forEach(f -> {
             //private 필드에도 접근할 수 있게 강제로 접근 허용
             f.setAccessible(true);
             String fieldName = f.getName();
             System.out.println(fieldName);
 
-            try{
+            try {
                 //리플렉션으로 user 인스턴스의 해당 필드값 꺼내기
                 Object fieldValue = f.get(dto);
                 System.out.println(fieldValue);
@@ -87,17 +93,18 @@ public class UserServlet extends HttpServlet {
                     throw new RuntimeException();
                 }
                 //필드값이 문자열일 때 공백/빈문자열이면 실패로 간주
-                if (fieldValue.toString().isBlank()){
+                if (fieldValue.toString().isBlank()) {
                     throw new RuntimeException();
                 }
             } catch (IllegalAccessException e) {
                 //필드 접근 권한 문제(드물게 발생)
-                System.out.println("필드 접근할 수 없음");
-            }catch(RuntimeException e){
+                System.out.println("필드에 접근할 수 없습니다.");
+            } catch (RuntimeException e) {
                 //위에서 던진 예외를 여기서 받아서 해당 필드에 대한 에러메시지 추가
                 error.put(fieldName, "빈 값일 수 없습니다.");
             }
         });
+
         return error;
     }
 }
