@@ -9,32 +9,30 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@WebServlet("/ch03/users")
-public class UserServlet extends HttpServlet {
-    private UserRepository userRepository;
+@WebServlet("/ch03/todos")
+public class TodoServlet extends HttpServlet {
+    private TodoRepository todoRepository;
     private Gson gson;
 
     @Override
-    public void init() throws ServletException {
-      userRepository = UserRepository.getInstance();
-      gson = new GsonBuilder().create();
+    public void init(ServletConfig config) throws ServletException {
+        todoRepository = TodoRepository.getInstance();
+        gson = new GsonBuilder().create();
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //전체 조회
-        //json사용해서
         req.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.setContentType("application/json");
-        SuccessResponse<List<User>>successResponse = SuccessResponse.<List<User>>builder()
+        List<Todo> todos = todoRepository.find();
+        SuccessResponse<List<Todo>>successResponse = SuccessResponse.<List<Todo>>builder()
                 .status(200)
                 .message("전체 출력")
-                .body(userRepository.findAll)
+                .body(todos)
                 .build();
         String json = gson.toJson(successResponse);
         resp.getWriter().write(json);
@@ -46,35 +44,33 @@ public class UserServlet extends HttpServlet {
 
         Gson gson = new GsonBuilder().create();
 
-        UserDto userDto = gson.fromJson(req.getReader(),UserDto.class);
+        TodoDto todoDto = gson.fromJson(req.getReader(),TodoDto.class);//여기까지 하고 다시 레퍼지토리 로 돌아감
 
-        User foundUser = userRepository.findByUsername(userDto.getUsername());
+        Todo foundUser = todoRepository.findByTodo(todoDto.getTitle());
 
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
         resp.setContentType("application/json");
 
         if (foundUser != null) {
             ErrorResponse errorResponse = ErrorResponse.builder()
                     .status(400)
-                    .message("이미 존재하는 username입니다.")
+                    .message("이미 존재하는 title입니다.")
                     .build();
             resp.setStatus(400);
             String json = gson.toJson(errorResponse);
             resp.getWriter().write(json);
             return;
         }
-        User user = userRepository.addUser(userDto.toEntity());
+        Todo todo = todoRepository.addTodo(todoDto.toEntity());
 
-        SuccessResponse<User> successResponse = SuccessResponse.<User>builder()
+        SuccessResponse<Todo> successResponse = SuccessResponse.<Todo>builder()
                 .status(200)
                 .message("사용자 등록이 완료 되었습니다")
-                .body(user)
+                .body(todo)
                 .build();
-         String json = gson.toJson(successResponse);
-         resp.setStatus(200);
-         resp.getWriter().write(json);
-
-
+        String json = gson.toJson(successResponse);
+        resp.setStatus(200);
+        resp.getWriter().write(json);
     }
-
 }

@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    private Integer userId;
+public class Todo {
+    private Integer todoId;
+    private String title;
+    private String content;
     private String username;
-    private String password;
-    private String name;
-    private String email;
 }
