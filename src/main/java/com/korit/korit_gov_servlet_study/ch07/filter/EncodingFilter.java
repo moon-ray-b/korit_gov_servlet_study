@@ -9,12 +9,16 @@ import java.nio.charset.StandardCharsets;
 public class EncodingFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("[EncodingFilter] 필터 생성");
+        System.out.println("필터 생성");
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         servletRequest.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
+        //서블릿 응답용도
+        filterChain.doFilter(servletRequest, servletResponse);
+
         servletResponse.setCharacterEncoding(StandardCharsets.UTF_8.name());
     }
 

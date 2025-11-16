@@ -22,11 +22,13 @@ public class ValidFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        //제이슨 객체변환하는 지슨 생성
         gson = new GsonBuilder().setPrettyPrinting().create();
+        //에러를 위한 맵
         Map<String,String> error = new HashMap<>();
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
 
-
+        //요청 메소드가 post 경로 users일때 검사 로직
         if ("POST".equals(httpServletRequest.getMethod()) && "/ch07/users".equals(httpServletRequest.getServletPath())) {
             SignupReqDto signupReqDto = gson.fromJson(servletRequest.getReader(),SignupReqDto.class);
             Arrays.stream(signupReqDto.getClass().getDeclaredFields()).forEach(f -> {
