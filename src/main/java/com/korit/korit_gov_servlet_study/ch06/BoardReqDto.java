@@ -9,12 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Board {
+public class BoardReqDto {
     private String title;
     private String content;
     private String username;
-
-    public Board toEntity() {
-        return new Board(title, content, username);
-    }
 }

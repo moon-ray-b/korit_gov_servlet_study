@@ -16,14 +16,13 @@ import java.io.IOException;
 
 @WebServlet("/ch07/users")
 public class UserServlet extends HttpServlet {
-    UserService userService;
-    Gson gson;
+    private UserService userService;
+    private Gson gson;
 
     @Override
     public void init() throws ServletException {
         userService = UserService.getInstance();
-        gson = new GsonBuilder().setPrettyPrinting().create();
-        System.out.println("[UserServlet] 초기 생성 성공");
+        gson = new GsonBuilder().create();
     }
 
     @Override

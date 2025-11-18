@@ -1,12 +1,12 @@
 package com.korit.korit_gov_servlet_study.ch06;
 
-import javax.servlet.annotation.WebServlet;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class BoardRepository {
     private List<Board> boards;
+    private Long boardId;
 
     private static BoardRepository instance;
     private BoardRepository() {
